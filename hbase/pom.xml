@@ -24,7 +24,7 @@
     <dependency>
       <groupId>org.apache.hbase</groupId>
       <artifactId>hbase-client</artifactId>
-      <version>0.98.0.2.1.2.0-402-hadoop2</version>
+      <version>0.96.1.2.0.6.1-102-hadoop2</version>
     </dependency>
 <!--
     <dependency>
