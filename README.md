@@ -35,12 +35,30 @@ Getting Started With YCSB for HBase
     ln -Fs /etc/hbase/conf/hbase-site.xml hbase/src/main/conf/hbase-site.xml 
     ```
 
-4. Run YCSB command.
+4. Create the table that is pre-split from the hbase shell.  In this example the table is pre-replit to 20 regions.
+   ```sh
+    hbase shell
+    hbase(main):001:0> create 'usertable', 'family', {SPLITS => (1..20).map {|i| "user#{1000+i*(9999-1000)/200}"}, MAX_FILESIZE => 4*1024**3}
+   ```
+
+5. Run YCSB following commands to load data into the table and run the benchmark.
 
     ```sh
-    bin/ycsb load basic -P workloads/workloada
-    bin/ycsb run basic -P workloads/workloada
+    ./bin/ycsb load hbase -p columnfamily=family -P workloads/workloada 
+    ./bin/ycsb run hbase -p columnfamily=family -P workloads/workloada
     ```
+
+6. To scale up the test for larger clusters the table can be pre-split wider and the benchmark should be run with more records and thread.  For example run with a table split to 300 regions, with 100,000,000 rows, with 1,000,000 operations running on 128 thread.
+
+ Create table:
+    ```sh
+    create 'usertable', 'family', {SPLITS => (1..300).map {|i| "user#{1000+i*(9999-1000)/200}"}, MAX_FILESIZE => 4*1024**3}
+    ```
+    Run test:
+    ```sh
+    ./bin/ycsb load hbase -p columnfamily=family -P workloads/workloada -p recordcount=100000000
+    ./bin/ycsb run hbase -p columnfamily=family -P workloads/workloada -p operationcount=1000000 -s -threads 128
+    ````
 
   Running the `ycsb` command without any argument will print the usage.
 
